@@ -150,3 +150,31 @@ class Dashboard(QMainWindow):
         info_layout.addWidget(self.architecture)
 
         content_layout.addWidget(info_card)
+
+        #tarjetas de monitoreo
+
+        cards_layout = QHBoxLayout()
+
+        self.cpu_card = DiagnosticCard(
+            "PROCESADOR",
+            "0%",
+            "Uso actual de CPU"
+        )
+
+        self.ram_card = DiagnosticCard(
+            "MEMORIA RAM",
+            "0%",
+            "Uso de memoria"
+        )
+
+        self.disk_card =  DiagnosticCard(
+            "ALMACENAMIENTO",
+            "0%",
+            "Espacio utilizado"
+        )
+
+        cards_layout.addWidget(self.cpu_card)
+        cards_layout.addWidget(self.ram_card)
+        cards_layout.addWidget(self.disk_card)
+
+        content_layout.addLayout(cards_layout)
