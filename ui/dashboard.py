@@ -39,3 +39,62 @@ class DiagnosticCard(QFrame):
     def update_card(self, value, percentage):
         self.value.setText(value)
         self.progress.setValue(percentage)
+
+class Dashboard(QMainWindow):
+    def __init__(self):
+        super().__init__()
+
+        self.setWindowTitle("PC Medicine")
+        self.setMinimumSize(1050, 650)
+
+        self.create_interface()
+        self.refresh_information()
+
+    def create_interface(self):
+        central = QWidget()
+        self.setCentralWidget(central)
+
+        main_layout = QHBoxLayout(central)
+        main_layout.setContentsMargins(0, 0, 0, 0)
+        main_layout.setSpacing(0)
+
+        #Creacion menu lateral
+
+        sidebar = QFrame()
+        sidebar.setObjectName("sidebar")
+        sidebar.setFixedWidth(230)
+
+        sidebar_layout = QVBoxLayout(sidebar)
+        sidebar_layout.setContentsMargins(20, 25, 20, 20)
+
+        logo = QLabel("✚ PC MEDICINE")
+        logo.setObjectName("logo")
+
+        subtitle = QLabel("ADVANCED DIAGNOSTICS")
+        subtitle.setObjectName("subtitle")
+
+        sidebar_layout.addWidget(logo)
+        sidebar_layout.addWidget(subtitle)
+        sidebar_layout.addSpacing(35)
+
+        menu_items = [
+            "Dashboard",
+            "Hardware",
+            "Monitoreo",
+            "Diagnostico",
+            "Blue Screen",
+            "Discos",
+            "Informes"
+        ]
+
+        for item in menu_items:
+            button = QPushButton(item)
+            button.setObjectName("menuButton")
+            button.setCursor(Qt.CursorShape.PointingHandCursor)
+            sidebar_layout.addWidget(button)
+
+        sidebar_layout.addStretch()
+
+        version = QLabel("PC Medicine v0.1")
+        version.setObjectName("subtitle")
+        sidebar_layout.addWidget(version)
