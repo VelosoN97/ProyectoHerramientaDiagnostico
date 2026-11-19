@@ -98,3 +98,34 @@ class Dashboard(QMainWindow):
         version = QLabel("PC Medicine v0.1")
         version.setObjectName("subtitle")
         sidebar_layout.addWidget(version)
+
+        #creacion panel principal
+
+        content = QWidget()
+        content.setObjectName("content")
+
+        content_layout = QVBoxLayout(content)
+        content_layout.setContentsMargins(35, 30, 35, 30)
+        content_layout.setSpacing(20)
+
+        header = QHBoxLayout()
+
+        title = QLabel("Dashboard")
+        title.setObjectName("pageTitle")
+
+        self.status_label = QLabel("Estado del Equipo: Revisando")
+        self.status_label.setObjectName("statusLabel")
+
+        header.addWidget(title)
+        header.addStretch()
+        header.addWidget(self.status_label)
+
+        content_layout.addLayout(header)
+
+        welcome = QLabel(
+            "Bienvenido a PC Medicine. "
+            "Supervisa la salud de tu computador."
+        )
+        welcome.setObjectName("description")
+
+        content_layout.addWidget(welcome)
