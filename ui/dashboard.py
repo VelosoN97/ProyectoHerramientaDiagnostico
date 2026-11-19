@@ -129,3 +129,24 @@ class Dashboard(QMainWindow):
         welcome.setObjectName("description")
 
         content_layout.addWidget(welcome)
+
+        #mostrar informacion del equipo
+
+        info_card = QFrame()
+        info_card.setObjectName("infoCard")
+
+        info_layout = QVBoxLayout(info_card)
+
+        info_title = QLabel("INFORMACION DEL EQUIPO")
+        info_title.setObjectName("sectionTitle")
+
+        self.computer_name = QLabel()
+        self.operating_system = QLabel()
+        self.architecture = QLabel()
+
+        info_layout.addWidget(info_title)
+        info_layout.addWidget(self.computer_name)
+        info_layout.addWidget(self.operating_system)
+        info_layout.addWidget(self.architecture)
+
+        content_layout.addWidget(info_card)
