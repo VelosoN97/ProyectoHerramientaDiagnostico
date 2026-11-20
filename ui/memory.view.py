@@ -86,3 +86,25 @@ class MemoryView(QWidget):
         status_layout.addStretch()
 
         main_layout.addWidget(status_frame)
+
+        #informacion fisica
+
+        physical_frame = QFrame()
+        physical_frame.setObjectName("statusFrame")
+
+        physical_layout = QVBoxLayout(physical_frame)
+
+        physical_title = QLabel(
+            "INFORMACION DE MEMORIA FISICA"
+        )
+        physical_title.setObjectName("sectionTitle")
+
+        self.physical_label = QLabel(
+            "Obteniendo informacion..."
+        )
+        self.physical_label.setObjectName("description")
+
+        physical_layout.addWidget(physical_title)
+        physical_layout.addWidget(self.physical_label)
+
+        main_layout.addWidget(physical_frame)
