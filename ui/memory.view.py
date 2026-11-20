@@ -41,3 +41,29 @@ class MemoryView(QWidget):
 
         main_layout.addWidget(title)
         main_layout.addWidget(description)
+
+        #tarjetas de informacion
+
+        cards_layout = QHBoxLayout()
+
+        self.total_label = self.create_card(
+            cards_layout,
+            "RAM TOTAL"
+        )
+
+        self.used_label = self.create_card(
+            cards_layout,
+            "RAM UTILIZADA"
+        )
+
+        self.available_label = self.create_card(
+            cards_layout,
+            "RAM DISPONIBLE"
+        )
+
+        self.percent_label = self.create_card(
+            cards_layout,
+            "USO DE MEMORIA"
+        )
+
+        main_layout.addLayout(cards_layout)
