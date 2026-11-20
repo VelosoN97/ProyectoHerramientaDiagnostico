@@ -178,3 +178,84 @@ class Dashboard(QMainWindow):
         cards_layout.addWidget(self.disk_card)
 
         content_layout.addLayout(cards_layout)
+
+        #creacion de boton de actualizacion
+
+        refresh_button = QPushButton("Actualizar diagnostico")
+        refresh_button.setObjectName("refreshButton")
+        refresh_button.setCursor(
+            Qt.CursorShape.PointingHandCursor
+        )
+        refresh_button.clicked.connect(
+            self.refresh_information
+        )
+
+        content_layout.addWidget(refresh_button)
+
+        content_layout.addStretch()
+
+        footer = QLabel(
+            "PC Medicine | Diagnostico y monitoreo informatico"
+        )
+        footer.setObjectName("subtitle")
+
+        content_layout.addWidget(footer)
+
+        main_layout.addWidget(sidebar)
+        main_layout.addWidget(content)
+
+        self.apply_styles()
+
+    def refresh_information(self):
+        try:
+            #Informacion del equipo
+            self.computer_name.setText(
+                f"Nombre del equipo: {platform.node()}"
+            )
+
+            self.operating_system.setText(
+                f"Sistema operativo: "
+                f"{platform.system()} {platform.release()}"
+            )
+
+            self.architecture.setText(
+                f"Arquitectura: {platform.machine()}"
+            )
+
+            #Uso del procesador
+
+            cpu = psutil.cpu_percent(interval=0.5)
+
+            self.cpu_card.update_card(
+                f"{cpu:.1f}%",
+                int(cpu)
+            )
+
+            #uso de memoria ram
+
+            memory = psutil.virtual_memory()
+
+            self.ram_card.update_card(
+                f"{memory.percent:.1f}%",
+                int(memory.percent)
+            )
+
+            #almacenamiento
+
+            disk = psutil.disk_usage("C:\\")
+
+            self.disk_card.update_card(
+                f"{disk.percent:.1f}%",
+                int(disk.percent)
+            )
+
+            self.status_label.setText(
+                "Estado del equipo: Monitoreo activo"
+            )
+
+        except Exception as error:
+            QMessageBox.warning(
+                self,
+                "Error de diagnostico",
+                f"No se pudo obtener toda la informacion: {error}"
+            )
