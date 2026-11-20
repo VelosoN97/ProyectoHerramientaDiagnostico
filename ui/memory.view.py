@@ -67,3 +67,22 @@ class MemoryView(QWidget):
         )
 
         main_layout.addLayout(cards_layout)
+
+        #estados de memoria
+
+        status_frame = QFrame()
+        status_frame.setObjectName("statusFrame")
+
+        status_layout = QHBoxLayout(status_frame)
+
+        status_title = QLabel("Estado de memoria")
+        status_title.setObjectName("sectionTitle")
+
+        self.status_label = QLabel("Analizando...")
+        self.status_label.setObjectName("statusLabel")
+
+        status_layout.addWidget(status_title)
+        status_layout.addWidget(self.status_label)
+        status_layout.addStretch()
+
+        main_layout.addWidget(status_frame)
