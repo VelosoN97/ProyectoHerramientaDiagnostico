@@ -21,7 +21,7 @@ class DiagnosticCard(QFrame):
         self.value.setObjectName("cardValue")
 
         self.description = QLabel(description)
-        self.value.setObjectName("cardDescription")
+        self.description.setObjectName("cardDescription")
 
         self.progress = QProgressBar()
         self.progress.setRange(0, 100)
@@ -259,3 +259,114 @@ class Dashboard(QMainWindow):
                 "Error de diagnostico",
                 f"No se pudo obtener toda la informacion: {error}"
             )
+
+    def apply_styles(self):
+
+        self.setStyleSheet("""
+            QMainWindow {
+                background-color: #101C30;
+            }
+
+            #sidebar {
+                background-color: #0B1525;
+            }
+
+            #logo {
+                color: #55C8FF;
+                font-size: 21px;
+                font-weight: bold;
+            }
+
+            #subtitle {
+                color: #8295AC;
+                font-size: 10px;
+            }
+
+            #menuButton {
+                background-color: transparent;
+                color: #B9C9DA;
+                text-align: left;
+                border: none;
+                padding: 13px;
+                border-radius: 7px;
+                font-size: 13px;
+            }
+
+            #menuButton:hover {
+                background-color: #183B5B;
+                color: white;
+            }
+
+            #content {
+                background-color: #101C30;
+            }
+
+            #pageTitle {
+                color: white;
+                font-size: 27px;
+                font-weight: bold;
+            }
+
+            #description {
+                color: #9AADC2;
+                font-size: 13px;
+            }
+
+            #statusLabel {
+                color: #55C8FF;
+                font-size: 12px;
+            }
+
+            #infoCard, #diagnosticCard {
+                background-color: #192A40;
+                border: 1px solid #29415C;
+                border-radius: 12px;
+                padding: 12px;
+            }
+
+            #infoCard QLabel {
+                color: #D5E2EF;
+                font-size: 12px;
+            }
+
+            #sectionTitle, #cardTitle {
+                color: #55C8FF;
+                font-weight: bold;
+                font-size: 12px;
+            }
+
+            #cardValue {
+                color: white;
+                font-size: 25px;
+                font-weight: bold;
+            }
+
+            #cardDescription {
+                color: #9AADC2;
+                font-size: 11px;
+            }
+
+            QProgressBar {
+                background-color: #293D54;
+                border: none;
+                border-radius: 3px;
+            }
+
+            QProgressBar::chunk {
+                background-color: #55C8FF;
+                border-radius: 3px;
+            }
+
+            #refreshButton {
+                background-color: #1676AE;
+                color: white;
+                border: none;
+                border-radius: 7px;
+                padding: 12px;
+                font-weight: bold;
+            }
+
+            #refreshButton:hover {
+                background-color: #2196D2;
+            }
+        """)
