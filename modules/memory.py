@@ -80,8 +80,24 @@ def get_top_processes(limit=10):
             ):
                 continue
     processes.sort(
-        key=lambda process: process["memory_db"],
+        key=lambda process: process["memory_mb"],
         reverse=True
     )
 
     return processes[:limit]
+
+def get_memory_status():
+    """
+    Clasifica el nivel de utilización de memoria.
+    """
+
+    memory = psutil.virtual_memory()
+
+    if memory.percent >= 90:
+        return "CRITICO"
+
+    elif memory.percent >= 80:
+        return "ADVERTENCIA"
+
+    else:
+        return "NORMAL"
