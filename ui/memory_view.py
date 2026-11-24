@@ -31,7 +31,7 @@ class MemoryView(QWidget):
         super().__init__()
 
         self.setWindowTitle("PC Medicine - Memory Analyzer")
-        self.setMinimumSize(950, 650)
+        self.setMinimumSize(800, 600)
 
         self.create_interface()
         self.refresh_memory()

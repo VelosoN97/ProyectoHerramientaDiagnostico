@@ -1,12 +1,27 @@
+
 import platform
-import psutil 
+import psutil
 
 from PySide6.QtWidgets import (
-    QMainWindow, QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFrame, QProgressBar, QMessageBox
+    QMainWindow,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QFrame,
+    QProgressBar,
+    QMessageBox,
+    QStackedWidget
 )
+
 from PySide6.QtCore import Qt
 
+from ui.memory_view import MemoryView
+
+
 class DiagnosticCard(QFrame):
+
     def __init__(self, title, value, description):
         super().__init__()
 
@@ -37,10 +52,13 @@ class DiagnosticCard(QFrame):
         layout.setSpacing(12)
 
     def update_card(self, value, percentage):
+
         self.value.setText(value)
         self.progress.setValue(percentage)
 
+
 class Dashboard(QMainWindow):
+
     def __init__(self):
         super().__init__()
 
@@ -51,21 +69,26 @@ class Dashboard(QMainWindow):
         self.refresh_information()
 
     def create_interface(self):
+
         central = QWidget()
         self.setCentralWidget(central)
 
         main_layout = QHBoxLayout(central)
+
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
 
-        #Creacion menu lateral
+        # MENU LATERAL
 
         sidebar = QFrame()
         sidebar.setObjectName("sidebar")
         sidebar.setFixedWidth(230)
 
         sidebar_layout = QVBoxLayout(sidebar)
-        sidebar_layout.setContentsMargins(20, 25, 20, 20)
+
+        sidebar_layout.setContentsMargins(
+            20, 25, 20, 20
+        )
 
         logo = QLabel("✚ PC MEDICINE")
         logo.setObjectName("logo")
@@ -77,8 +100,28 @@ class Dashboard(QMainWindow):
         sidebar_layout.addWidget(subtitle)
         sidebar_layout.addSpacing(35)
 
+        # CONTENEDOR DE PANTALLAS
+
+        self.pages = QStackedWidget()
+
+        # CREAR DASHBOARD
+
+        self.dashboard_page = self.create_dashboard_page()
+
+        # CREAR MEMORY ANALYZER
+
+        self.memory_page = MemoryView()
+
+        # AGREGAR PANTALLAS
+
+        self.pages.addWidget(self.dashboard_page)
+        self.pages.addWidget(self.memory_page)
+
+        # OPCIONES DEL MENU
+
         menu_items = [
             "Dashboard",
+            "Memory Analyzer",
             "Hardware",
             "Monitoreo",
             "Diagnostico",
@@ -88,32 +131,60 @@ class Dashboard(QMainWindow):
         ]
 
         for item in menu_items:
+
             button = QPushButton(item)
+
             button.setObjectName("menuButton")
-            button.setCursor(Qt.CursorShape.PointingHandCursor)
+
+            button.setCursor(
+                Qt.CursorShape.PointingHandCursor
+            )
+
+            button.clicked.connect(
+                lambda checked=False, name=item:
+                self.navigate_to(name)
+            )
+
             sidebar_layout.addWidget(button)
 
         sidebar_layout.addStretch()
 
-        version = QLabel("PC Medicine v0.1")
+        version = QLabel("PC Medicine v0.2")
         version.setObjectName("subtitle")
+
         sidebar_layout.addWidget(version)
 
-        #creacion panel principal
+        # AGREGAR ELEMENTOS PRINCIPALES
+
+        main_layout.addWidget(sidebar)
+        main_layout.addWidget(self.pages)
+
+        self.apply_styles()
+
+    def create_dashboard_page(self):
 
         content = QWidget()
         content.setObjectName("content")
 
         content_layout = QVBoxLayout(content)
-        content_layout.setContentsMargins(35, 30, 35, 30)
+
+        content_layout.setContentsMargins(
+            35, 30, 35, 30
+        )
+
         content_layout.setSpacing(20)
+
+        # ENCABEZADO
 
         header = QHBoxLayout()
 
         title = QLabel("Dashboard")
         title.setObjectName("pageTitle")
 
-        self.status_label = QLabel("Estado del Equipo: Revisando")
+        self.status_label = QLabel(
+            "Estado del equipo: Revisando"
+        )
+
         self.status_label.setObjectName("statusLabel")
 
         header.addWidget(title)
@@ -122,22 +193,28 @@ class Dashboard(QMainWindow):
 
         content_layout.addLayout(header)
 
+        # BIENVENIDA
+
         welcome = QLabel(
             "Bienvenido a PC Medicine. "
             "Supervisa la salud de tu computador."
         )
+
         welcome.setObjectName("description")
 
         content_layout.addWidget(welcome)
 
-        #mostrar informacion del equipo
+        # INFORMACION DEL EQUIPO
 
         info_card = QFrame()
         info_card.setObjectName("infoCard")
 
         info_layout = QVBoxLayout(info_card)
 
-        info_title = QLabel("INFORMACION DEL EQUIPO")
+        info_title = QLabel(
+            "INFORMACION DEL EQUIPO"
+        )
+
         info_title.setObjectName("sectionTitle")
 
         self.computer_name = QLabel()
@@ -151,7 +228,7 @@ class Dashboard(QMainWindow):
 
         content_layout.addWidget(info_card)
 
-        #tarjetas de monitoreo
+        # TARJETAS DE MONITOREO
 
         cards_layout = QHBoxLayout()
 
@@ -167,7 +244,7 @@ class Dashboard(QMainWindow):
             "Uso de memoria"
         )
 
-        self.disk_card =  DiagnosticCard(
+        self.disk_card = DiagnosticCard(
             "ALMACENAMIENTO",
             "0%",
             "Espacio utilizado"
@@ -179,13 +256,18 @@ class Dashboard(QMainWindow):
 
         content_layout.addLayout(cards_layout)
 
-        #creacion de boton de actualizacion
+        # BOTON ACTUALIZAR
 
-        refresh_button = QPushButton("Actualizar diagnostico")
+        refresh_button = QPushButton(
+            "Actualizar diagnostico"
+        )
+
         refresh_button.setObjectName("refreshButton")
+
         refresh_button.setCursor(
             Qt.CursorShape.PointingHandCursor
         )
+
         refresh_button.clicked.connect(
             self.refresh_information
         )
@@ -194,21 +276,51 @@ class Dashboard(QMainWindow):
 
         content_layout.addStretch()
 
+        # PIE DE PAGINA
+
         footer = QLabel(
             "PC Medicine | Diagnostico y monitoreo informatico"
         )
+
         footer.setObjectName("subtitle")
 
         content_layout.addWidget(footer)
 
-        main_layout.addWidget(sidebar)
-        main_layout.addWidget(content)
+        return content
 
-        self.apply_styles()
+    def navigate_to(self, page_name):
+
+        if page_name == "Dashboard":
+
+            self.pages.setCurrentWidget(
+                self.dashboard_page
+            )
+
+            self.refresh_information()
+
+        elif page_name == "Memory Analyzer":
+
+            self.pages.setCurrentWidget(
+                self.memory_page
+            )
+
+            self.memory_page.refresh_memory()
+
+        else:
+
+            QMessageBox.information(
+                self,
+                "Modulo en desarrollo",
+                f"El modulo {page_name} "
+                "todavia se encuentra en desarrollo."
+            )
 
     def refresh_information(self):
+
         try:
-            #Informacion del equipo
+
+            # INFORMACION DEL EQUIPO
+
             self.computer_name.setText(
                 f"Nombre del equipo: {platform.node()}"
             )
@@ -222,7 +334,7 @@ class Dashboard(QMainWindow):
                 f"Arquitectura: {platform.machine()}"
             )
 
-            #Uso del procesador
+            # USO DEL PROCESADOR
 
             cpu = psutil.cpu_percent(interval=0.5)
 
@@ -231,7 +343,7 @@ class Dashboard(QMainWindow):
                 int(cpu)
             )
 
-            #uso de memoria ram
+            # USO DE MEMORIA RAM
 
             memory = psutil.virtual_memory()
 
@@ -240,7 +352,7 @@ class Dashboard(QMainWindow):
                 int(memory.percent)
             )
 
-            #almacenamiento
+            # ALMACENAMIENTO
 
             disk = psutil.disk_usage("C:\\")
 
@@ -254,15 +366,18 @@ class Dashboard(QMainWindow):
             )
 
         except Exception as error:
+
             QMessageBox.warning(
                 self,
                 "Error de diagnostico",
-                f"No se pudo obtener toda la informacion: {error}"
+                f"No se pudo obtener toda "
+                f"la informacion: {error}"
             )
 
     def apply_styles(self):
 
         self.setStyleSheet("""
+
             QMainWindow {
                 background-color: #101C30;
             }
@@ -369,4 +484,5 @@ class Dashboard(QMainWindow):
             #refreshButton:hover {
                 background-color: #2196D2;
             }
+
         """)
