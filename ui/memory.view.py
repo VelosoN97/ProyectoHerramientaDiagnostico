@@ -108,3 +108,56 @@ class MemoryView(QWidget):
         physical_layout.addWidget(self.physical_label)
 
         main_layout.addWidget(physical_frame)
+
+        #tabla de procesos
+
+        process_title = QLabel(
+            "PROCESOS CON MAYOR CONSUMO DE RAM"
+        )
+        process_title.setObjectName("sectionTitle")
+
+        main_layout.addWidget(process_title)
+
+        self.process_table = QTableWidget()
+
+        self.process_table.setColumnCount(3)
+
+        self.process_table.setHorizontalHeaderLabels([
+            "PID",
+            "Proceso",
+            "Memoria utlizada (MB)"
+        ])
+
+        self.process_table.horizontalHeader().setSectionResizeMode(
+            QHeaderView.ResizeMode.Stretch
+        )
+
+        self.process_table.setEditTriggers(
+            QTableWidget.EditTrigger.NoEditTriggers
+        )
+
+        self.process_table.setSelectionBehavior(
+            QTableWidget.SelectionBehavior.SelectRows
+        )
+
+        self.process_table.setAlternatingRowColors(True)
+
+        main_layout.addWidget(self.process_table)
+
+        #boton actualizar
+
+        self.refresh_button = QPushButton(
+            "Actualizar analisis"
+        )
+
+        self.refresh_button.setObjectName("refreshButton")
+
+        self.refresh_button.clicked.connect(
+            self.refresh_memory
+        )
+
+        main_layout.addWidget(self.refresh_button)
+
+        self.apply_styles()
+
+    #def create_card(self, layout, title)
