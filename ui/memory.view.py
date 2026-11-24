@@ -160,4 +160,228 @@ class MemoryView(QWidget):
 
         self.apply_styles()
 
-    #def create_card(self, layout, title)
+    def create_card(self, layout, title):
+
+        card = QFrame()
+        card.setObjectName("memoryCard")
+
+        card_layout = QVBoxLayout(card)
+
+        title_label = QLabel(title)
+        title_label.setObjectName("cardTitle")
+
+        value_label = QLabel("0 GB")
+        value_label.setObjectName("cardValue")
+
+        card_layout.addWidget(title_label)
+        card_layout.addWidget(value_label)
+
+        layout.addWidget(card)
+
+        return value_label
+
+    def refresh_memory(self):
+        self.refresh_button.setEnabled(False)
+
+        try:
+            #resumen de memoria
+
+            memory = get_memory_summary()
+
+            self.total_label.setText(
+                f"{memory['total']} GB"
+            )
+
+            self.used_label.setText(
+                f"{memory['used']} GB"
+            )
+
+            self.available_label.setText(
+                f"{memory['available']} GB"
+            )
+
+            self.percent_label.setText(
+                f"{memory['percent']}%"
+            )
+
+            #estado de memoria
+
+            status = get_memory_status()
+
+            self.status_label.setText(status)
+
+            if status == "CRITICO":
+                self.status_label.setStyleSheet(
+                    "color: #FF5555; font-weight: bold;"
+                )
+
+            elif status == "ADVERTENCIA":
+                self.status_label.setStyleSheet(
+                    "color: #F5B942; font-weight: bold;"
+                )
+
+            else:
+                self.status_label.setStyleSheet(
+                    "color: #35D18A; font-weight: bold;"
+                )
+
+            #memoria fisica
+
+            physical = get_physical_memory()
+
+            if physical:
+
+                total_physical = sum(
+                    module["capacity"] for module in physical
+                )
+
+                manufacturers = sorted(set(
+                    module["manufacturer"].strip()
+                    for module in physical
+                ))
+
+                speeds = sorted(set(
+                    module["speed"]
+                    for module in physical
+                    if module["speed"] is not None
+                ))
+
+                self.physical_label.setText(
+                    f"Capacidad reportada por WMI: "
+                    f"{total_physical:.2f} GB | "
+                    f"Fabricante: {', '.join(manufacturers)} | "
+                    f"Velocidad reportada: {speeds} MT/s"
+                )
+
+            else:
+
+                self.physical_label.setText(
+                    "No se pudo obtener información fisica."
+                )
+
+            #procesos
+
+            processes = get_top_processes(limit=10)
+
+            self.process_table.setRowCount(
+                len(processes)
+            )
+
+            for row, process in enumerate(processes):
+
+                pid_item = QTableWidgetItem(
+                    str(process["pid"])
+                )
+
+                name_item = QTableWidgetItem(
+                    process["name"]
+                )
+
+                memory_item = QTableWidgetItem(
+                    f"{process['memory_mb']:.2f} MB"
+                )
+
+                pid_item.setTextAlignment(
+                    Qt.AlignmentFlag.AlignCenter
+                )
+
+                memory_item.setTextAlignment(
+                    Qt.AlignmentFlag.AlignCenter
+                )
+
+                self.process_table.setItem(
+                    row, 0, pid_item
+                )
+
+                self.process_table.setItem(
+                    row, 1, name_item
+                )
+
+                self.process_table.setItem(
+                    row, 2, memory_item
+                )
+
+        except Exception as error:
+
+            QMessageBox.warning(
+                self,
+                "Error de diagnostico",
+                f"No se pudo actualizar la memoria: {error}"
+            )
+        finally:
+            self.refresh_button.setEnabled(True)
+
+    def apply_styles(self):
+        self.setStyleSheet("""
+            QWidget {
+                background-color: #101C30;
+                color: white;
+                font-family: Segoe UI;
+            }
+
+            #pageTitle {
+                font-size: 26px;
+                font-weight: bold;
+            }
+
+            #description {
+                color: #9AADC2;
+                font-size: 12px;
+            }
+
+            #memoryCard, #statusFrame {
+                background-color: #192A40;
+                border: 1px solid #29415C;
+                border-radius: 10px;
+                padding: 10px;
+            }
+
+            #cardTitle, #sectionTitle {
+                color: #55C8FF;
+                font-size: 11px;
+                font-weight: bold;
+            }
+
+            #cardValue {
+                color: white;
+                font-size: 23px;
+                font-weight: bold;
+            }
+
+            #statusLabel {
+                font-size: 13px;
+            }
+
+            QTableWidget {
+                background-color: #192A40;
+                alternate-background-color: #20344D;
+                color: white;
+                border: 1px solid #29415C;
+                gridline-color: #29415C;
+            }
+
+            QHeaderView::section {
+                background-color: #183B5B;
+                color: white;
+                padding: 9px;
+                border: none;
+                font-weight: bold;
+            }
+
+            #refreshButton {
+                background-color: #1676AE;
+                color: white;
+                padding: 12px;
+                border: none;
+                border-radius: 7px;
+                font-weight: bold;
+            }
+
+            #refreshButton:hover {
+                background-color: #2196D2;
+            }
+
+            #refreshButton:disabled {
+                background-color: #526477;
+            }
+        """)
