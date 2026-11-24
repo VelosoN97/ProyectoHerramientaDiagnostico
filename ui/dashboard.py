@@ -2,7 +2,10 @@
 import platform
 import psutil
 
+from datetime import datetime
+
 from PySide6.QtWidgets import (
+    QApplication,
     QMainWindow,
     QWidget,
     QVBoxLayout,
@@ -258,21 +261,39 @@ class Dashboard(QMainWindow):
 
         # BOTON ACTUALIZAR
 
-        refresh_button = QPushButton(
+        self.dashboard_refresh_button = QPushButton(
             "Actualizar diagnostico"
         )
 
-        refresh_button.setObjectName("refreshButton")
+        self.dashboard_refresh_button.setObjectName(
+            "refreshButton"
+        )
 
-        refresh_button.setCursor(
+        self.dashboard_refresh_button.setCursor(
             Qt.CursorShape.PointingHandCursor
         )
 
-        refresh_button.clicked.connect(
+        self.dashboard_refresh_button.clicked.connect(
             self.refresh_information
         )
 
-        content_layout.addWidget(refresh_button)
+        content_layout.addWidget(
+            self.dashboard_refresh_button
+        )
+
+        # MENSAJE DE ACTUALIZACION
+
+        self.dashboard_update_label = QLabel(
+            "Esperando actualizacion..."
+        )
+
+        self.dashboard_update_label.setObjectName(
+            "dashboardUpdateLabel"
+        )
+
+        content_layout.addWidget(
+            self.dashboard_update_label
+        )
 
         content_layout.addStretch()
 
@@ -317,7 +338,19 @@ class Dashboard(QMainWindow):
 
     def refresh_information(self):
 
+        self.dashboard_refresh_button.setEnabled(False)
+
         try:
+
+            self.dashboard_refresh_button.setText(
+                "Actualizando diagnostico..."
+            )
+
+            self.dashboard_update_label.setText(
+                "Analizando el equipo..."
+            )
+
+            QApplication.processEvents()
 
             # INFORMACION DEL EQUIPO
 
@@ -365,7 +398,20 @@ class Dashboard(QMainWindow):
                 "Estado del equipo: Monitoreo activo"
             )
 
+            # CONFIRMACION DE ACTUALIZACION
+
+            hora = datetime.now().strftime("%H:%M:%S")
+
+            self.dashboard_update_label.setText(
+                f"✓ Diagnostico actualizado correctamente | "
+                f"Ultima actualizacion: {hora}"
+            )
+
         except Exception as error:
+
+            self.dashboard_update_label.setText(
+                "No se pudo completar el diagnostico."
+            )
 
             QMessageBox.warning(
                 self,
@@ -373,6 +419,14 @@ class Dashboard(QMainWindow):
                 f"No se pudo obtener toda "
                 f"la informacion: {error}"
             )
+
+        finally:
+
+            self.dashboard_refresh_button.setText(
+                "Actualizar diagnostico"
+            )
+
+            self.dashboard_refresh_button.setEnabled(True)
 
     def apply_styles(self):
 
@@ -483,6 +537,17 @@ class Dashboard(QMainWindow):
 
             #refreshButton:hover {
                 background-color: #2196D2;
+            }
+
+            #refreshButton:disabled {
+                background-color: #29415C;
+                color: #9AADC2;
+            }
+
+            #dashboardUpdateLabel {
+                color: #35D18A;
+                font-size: 11px;
+                padding: 5px;
             }
 
         """)
