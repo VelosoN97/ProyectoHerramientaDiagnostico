@@ -1,6 +1,18 @@
+
+from datetime import datetime
+
 from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QFrame, QTableWidget, QTableWidgetItem, 
-    QHeaderView, QMessageBox
+    QApplication,
+    QWidget,
+    QVBoxLayout,
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QFrame,
+    QTableWidget,
+    QTableWidgetItem,
+    QHeaderView,
+    QMessageBox
 )
 
 from PySide6.QtCore import Qt
@@ -11,6 +23,7 @@ from modules.memory import (
     get_top_processes,
     get_memory_status
 )
+
 
 class MemoryView(QWidget):
 
@@ -29,7 +42,7 @@ class MemoryView(QWidget):
         main_layout.setContentsMargins(30, 25, 30, 25)
         main_layout.setSpacing(20)
 
-        #encabezado
+        # ENCABEZADO
 
         title = QLabel("Memory Analyzer")
         title.setObjectName("pageTitle")
@@ -42,7 +55,7 @@ class MemoryView(QWidget):
         main_layout.addWidget(title)
         main_layout.addWidget(description)
 
-        #tarjetas de informacion
+        # TARJETAS DE INFORMACION
 
         cards_layout = QHBoxLayout()
 
@@ -68,14 +81,14 @@ class MemoryView(QWidget):
 
         main_layout.addLayout(cards_layout)
 
-        #estados de memoria
+        # ESTADO DE MEMORIA
 
         status_frame = QFrame()
         status_frame.setObjectName("statusFrame")
 
         status_layout = QHBoxLayout(status_frame)
 
-        status_title = QLabel("Estado de memoria")
+        status_title = QLabel("Estado de memoria:")
         status_title.setObjectName("sectionTitle")
 
         self.status_label = QLabel("Analizando...")
@@ -87,7 +100,7 @@ class MemoryView(QWidget):
 
         main_layout.addWidget(status_frame)
 
-        #informacion fisica
+        # INFORMACION FISICA
 
         physical_frame = QFrame()
         physical_frame.setObjectName("statusFrame")
@@ -109,7 +122,7 @@ class MemoryView(QWidget):
 
         main_layout.addWidget(physical_frame)
 
-        #tabla de procesos
+        # TABLA DE PROCESOS
 
         process_title = QLabel(
             "PROCESOS CON MAYOR CONSUMO DE RAM"
@@ -125,7 +138,7 @@ class MemoryView(QWidget):
         self.process_table.setHorizontalHeaderLabels([
             "PID",
             "Proceso",
-            "Memoria utlizada (MB)"
+            "Memoria utilizada (MB)"
         ])
 
         self.process_table.horizontalHeader().setSectionResizeMode(
@@ -144,7 +157,17 @@ class MemoryView(QWidget):
 
         main_layout.addWidget(self.process_table)
 
-        #boton actualizar
+        # INDICADOR DE ACTUALIZACION
+
+        self.update_label = QLabel(
+            "Esperando actualizacion..."
+        )
+
+        self.update_label.setObjectName("updateLabel")
+
+        main_layout.addWidget(self.update_label)
+
+        # BOTON ACTUALIZAR
 
         self.refresh_button = QPushButton(
             "Actualizar analisis"
@@ -181,10 +204,24 @@ class MemoryView(QWidget):
         return value_label
 
     def refresh_memory(self):
+
         self.refresh_button.setEnabled(False)
 
         try:
-            #resumen de memoria
+
+            # INDICADOR DE PROCESAMIENTO
+
+            self.refresh_button.setText(
+                "Actualizando..."
+            )
+
+            self.update_label.setText(
+                "Analizando memoria del equipo..."
+            )
+
+            QApplication.processEvents()
+
+            # RESUMEN DE MEMORIA
 
             memory = get_memory_summary()
 
@@ -204,35 +241,39 @@ class MemoryView(QWidget):
                 f"{memory['percent']}%"
             )
 
-            #estado de memoria
+            # ESTADO DE MEMORIA
 
             status = get_memory_status()
 
             self.status_label.setText(status)
 
             if status == "CRITICO":
+
                 self.status_label.setStyleSheet(
                     "color: #FF5555; font-weight: bold;"
                 )
 
             elif status == "ADVERTENCIA":
+
                 self.status_label.setStyleSheet(
                     "color: #F5B942; font-weight: bold;"
                 )
 
             else:
+
                 self.status_label.setStyleSheet(
                     "color: #35D18A; font-weight: bold;"
                 )
 
-            #memoria fisica
+            # INFORMACION DE MEMORIA FISICA
 
             physical = get_physical_memory()
 
             if physical:
 
                 total_physical = sum(
-                    module["capacity"] for module in physical
+                    module["capacity"]
+                    for module in physical
                 )
 
                 manufacturers = sorted(set(
@@ -256,10 +297,10 @@ class MemoryView(QWidget):
             else:
 
                 self.physical_label.setText(
-                    "No se pudo obtener información fisica."
+                    "No se pudo obtener informacion fisica."
                 )
 
-            #procesos
+            # PROCESOS CON MAYOR CONSUMO
 
             processes = get_top_processes(limit=10)
 
@@ -301,17 +342,38 @@ class MemoryView(QWidget):
                     row, 2, memory_item
                 )
 
+            # CONFIRMACION DE ACTUALIZACION
+
+            self.update_label.setText(
+                f"✓ Analisis actualizado correctamente | "
+                f"Ultima actualizacion: "
+                f"{datetime.now().strftime('%H:%M:%S')}"
+            )
+
         except Exception as error:
+
+            self.update_label.setText(
+                "No se pudo completar la actualizacion."
+            )
 
             QMessageBox.warning(
                 self,
                 "Error de diagnostico",
                 f"No se pudo actualizar la memoria: {error}"
             )
+
         finally:
+
+            # RESTAURAR BOTON
+
+            self.refresh_button.setText(
+                "Actualizar analisis"
+            )
+
             self.refresh_button.setEnabled(True)
 
     def apply_styles(self):
+
         self.setStyleSheet("""
             QWidget {
                 background-color: #101C30;
@@ -383,5 +445,11 @@ class MemoryView(QWidget):
 
             #refreshButton:disabled {
                 background-color: #526477;
+            }
+
+            #updateLabel {
+                color: #35D18A;
+                font-size: 11px;
+                padding: 5px;
             }
         """)
