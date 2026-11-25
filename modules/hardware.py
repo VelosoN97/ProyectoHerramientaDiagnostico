@@ -147,7 +147,7 @@ def get_hardware_info():
 
     return{
         "system": {
-            "computer_game": platform.node(),
+            "computer_name": platform.node(),
             "system": platform.system(),
             "version": platform.version(),
             "architecture": platform.machine()
