@@ -21,7 +21,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 
 from ui.memory_view import MemoryView
-
+from ui.hardware_view import HardwareView
 
 class DiagnosticCard(QFrame):
 
@@ -115,10 +115,15 @@ class Dashboard(QMainWindow):
 
         self.memory_page = MemoryView()
 
+        # CREAR HARDWARE
+
+        self.hardware_page = HardwareView()
+
         # AGREGAR PANTALLAS
 
         self.pages.addWidget(self.dashboard_page)
         self.pages.addWidget(self.memory_page)
+        self.pages.addWidget(self.hardware_page)
 
         # OPCIONES DEL MENU
 
@@ -326,6 +331,14 @@ class Dashboard(QMainWindow):
             )
 
             self.memory_page.refresh_memory()
+
+        elif page_name == "Hardware":
+
+            self.pages.setCurrentWidget(
+                self.hardware_page
+            )
+
+            self.hardware_page.refresh_hardware()
 
         else:
 
